@@ -6,9 +6,13 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+import java.io.Serializable;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -17,25 +21,49 @@ import retrofit2.Response;
 
 public class SignUp extends AppCompatActivity {
     Button btnSignUp;
-    EditText edUsername, edPassword, edFirstname, edSecondName;
+    EditText edUsername, edPassword, edFirstname, edSecondName,edPassword1,edPassword3,edPassword4;
+    ConstraintLayout error;
+    TextView textView6,errorMessage;
+    Button ok;
+
+    int a;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_up);
-        btnSignUp = findViewById(R.id.button);
+
+        btnSignUp = findViewById(R.id.button2);
         edUsername = findViewById(R.id.username2);
         edPassword = findViewById(R.id.password2);
+        edPassword1=findViewById(R.id.password21);
+       edPassword4=findViewById(R.id.password3);
         edFirstname = findViewById(R.id.firstname);
         edSecondName = findViewById(R.id.secondname);
-
+        ok=findViewById(R.id.button4);
+        errorMessage=findViewById(R.id.textView5);
+        error=findViewById(R.id.error);
+        textView6=findViewById(R.id.textView6);
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(edUsername.getText().toString()) || TextUtils.isEmpty(edFirstname.getText().toString()) || TextUtils.isEmpty(edSecondName.getText().toString()) || TextUtils.isEmpty(edPassword.getText().toString())) {
-                    Toast.makeText(SignUp.this, "Поля пустые", Toast.LENGTH_LONG).show();
-                } else {
+                    String Message = "Введите данные пользователя";
+                    btnSignUp.setVisibility(View.INVISIBLE);
+                    error.setVisibility(View.VISIBLE);
+                    errorMessage.setText(Message);
+                    ok.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            btnSignUp.setVisibility(View.VISIBLE);
+                            error.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
+
+
+                else  {
                     RegisterRequest registerRequest = new RegisterRequest();
                     registerRequest.setEmail(edUsername.getText().toString());
                     registerRequest.setFirstName(edFirstname.getText().toString());
@@ -46,6 +74,15 @@ public class SignUp extends AppCompatActivity {
                 }
             }
         });
+
+        textView6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SignUp.this, SIgnIn.class));
+
+
+            }
+        });
     }
 
     public void SignUpUsers(RegisterRequest registerRequest) {
@@ -54,13 +91,24 @@ public class SignUp extends AppCompatActivity {
             @Override
             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(SignUp.this, "Successful", Toast.LENGTH_LONG).show();
+
                     startActivity(new Intent(SignUp.this, SIgnIn.class));
                     finish();
                 } else {
-                    Toast.makeText(SignUp.this, "Возникла ощибка, повторите позже...", Toast.LENGTH_LONG).show();
+                    String message = "Что-то пошло не так";
+                    btnSignUp.setVisibility(View.INVISIBLE);
+                    error.setVisibility(View.VISIBLE);
+                    errorMessage.setText(message);
+                    ok.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            btnSignUp.setVisibility(View.VISIBLE);
+                            error.setVisibility(View.INVISIBLE);
+                        }
+                    });
                 }
             }
+
 
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
@@ -77,3 +125,6 @@ public class SignUp extends AppCompatActivity {
         edSecondName = findViewById(R.id.secondname);
     }
 }
+
+
+
